@@ -880,6 +880,18 @@ app.listen(1337)
 console.log('Server running at http://localhost:1337/')
 ```
 
+Because this file is running from the `/lib` folder, and the output is now in the `/lib/Components` folder, we were able to get rid of the `..` folder handling and now just serve `/Components` out of the `/lib/Components` folder more cleanly.
+
+**BEFORE**
+``` jsx
+app.use('/Components', express.static(path.join(path.join(__dirname, '..'), 'Components')))
+```
+
+**AFTER**
+``` jsx
+app.use('/Components', express.static(path.join(__dirname, 'Components')))
+```
+
 Reloading the page, we see that everything is still working.  But viewing source, we discover that we're once again loading `/Components/Timestamp.js` and that its code is served in raw JavaScript instead of JSX, even though we're maintaining it in JSX.
 
 We've successfully refactored the project to allow us to:
@@ -1113,16 +1125,16 @@ Here are some notes on this step:
 
 With all of this in place, we can edit `/assets/index.js` while Node is running and Gulp will re-run browserify through our "client-scripts" task and restart node.
 
-Now there's one last detail we need to take care of: we need the browser to be able to get to the Browserify output.  Right now, it can reach `/lib/Components` and `/assets` but we need it to get to `/lib/assets`.  The good news is that we no longer need direct access to `/assets`.  So let's edit `index.jsx` to serve static content from `/lib/assets/` under the `/assets` path.
+As before with the Components folder, we are able to edit the path to `/assets/index.js` as the file is running from within the `/lib/` folder.
 
 **BEFORE**
 ``` jsx
-app.use('/assets', express.static(path.join(path.join(__dirname, '..'), 'assets')))
+app.use('/Components', express.static(path.join(path.join(__dirname, '..'), 'Components')))
 ```
 
 **AFTER**
 ``` jsx
-app.use('/assets', express.static(path.join(__dirname, 'assets')))
+app.use('/Components', express.static(path.join(__dirname, 'Components')))
 ```
 
 Because this file is running from the `/lib` folder, and the Browserify output is now in the `/lib/assets` folder, we were able to get rid of the `..` folder handling and now just serve `/assets` out of the `/lib/assets` folder more cleanly.
